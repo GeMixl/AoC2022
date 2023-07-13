@@ -7,7 +7,7 @@ def read_input(filename: str) -> []:
     return input
 
 
-def get_calories_for_each_elf(food_list: []) ->  []:
+def get_calories_for_each_elf(food_list: []) -> []:
     return [reduce(lambda a, b: a + b, items) for items in food_list]
 
 
@@ -22,9 +22,7 @@ def solve_part_ii(input: []) -> int:
 
 
 if __name__ == "__main__":
-
     filename = "input_day01.txt"
-
     print("--- Part One ---")
     print(solve_part_i(read_input(filename)))
     print("--- Part Two ---")
