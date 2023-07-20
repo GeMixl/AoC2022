@@ -33,7 +33,7 @@ touch "$day_input_file"
 
 {
 echo "###############################################################"
-echo "# Advent of Code 2021                                         #"
+echo "# Advent of Code 2022                                         #"
 echo "# Day $day https://adventofcode.com/2021/day/$day                 #"
 echo "# Puzzle input at https://adventofcode.com/2022/day/$day/input  #"
 echo "###############################################################"
