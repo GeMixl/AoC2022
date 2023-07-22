@@ -7,6 +7,7 @@
 
 import parse
 from itertools import zip_longest
+from collections import deque
 
 
 def read_input(filename: str) -> []:
@@ -32,21 +33,27 @@ def print_stack(stack):
 
 def solve_part_i(input):
     stack, instructions = input
-    print_stack(stack)
+    stack = {k: deque(v) for k, v in stack.items()}
     for instruction in instructions:
         for _ in range(instruction['n_crates']):
-            stack[instruction['to']] = stack[instruction['to']] + [stack[instruction['from']][-1]]
-            stack[instruction['from']] = stack[instruction['from']][:-1]
-        print_stack(stack)
-
+            stack[instruction['to']].append(stack[instruction['from']].pop())
     return "".join(crate[-1] for _, crate in stack.items())
 
 def solve_part_ii(input):
-    pass
+    stack, instructions = input
+    stack = {k: deque(v) for k, v in stack.items()}
+    print_stack(stack)
+    for instruction in instructions:
+        transit_stack = []
+        for _ in range(instruction['n_crates']):
+            transit_stack += stack[instruction['from']].pop()
+        stack[instruction['to']] += transit_stack[::-1]
+        print_stack(stack)
+    return "".join(crate[-1] for _, crate in stack.items())
 
 
 if __name__ == "__main__":
-    filename = "test_day05.txt"
+    filename = "input_day05.txt"
     print("--- Part One ---")
     print(solve_part_i(read_input(filename)))
     print("--- Part Two ---")
