@@ -7,8 +7,10 @@
 import enum
 from collections import deque
 import logging
-from dsplot.graph import Graph
+#from dsplot.graph import Graph
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def read_input(filename: str) -> []:
     with open(filename, "r") as fs:
@@ -16,10 +18,11 @@ def read_input(filename: str) -> []:
     return input
 
 class Node:
-    def __init__(self, node_name, size=0):
+    def __init__(self, node_name, dir_name, size=0):
         self.children = []
         self.parent = None
         self.name = node_name
+        self.dir = dir_name
         self.size = size
 
     def __str__(self):
@@ -36,15 +39,15 @@ class FileTree:
         self.curNode = None
 
     def descend_to_child_node(self, node_name):
-        self.curNode = next(child for child in self.curNode.children if child.name==node_name)
+        self.curNode = next(child for child in self.curNode.children if child.name == node_name)
 
-    def add_node(self, child_name, size=0):
-        new_node = Node(node_name=child_name, size=size)
+    def add_node(self, child_name, dir_name, size=0):
+        new_node = Node(node_name=child_name, dir_name=dir_name, size=size)
         self.curNode.add_child(new_node)
         # print(f'Adding node {self.nodeList[child_name]} to {self.curNode}')
 
-    def add_root_node(self, node_name):
-        self.rootNode = Node(node_name)
+    def add_root_node(self, node_name, dir_name):
+        self.rootNode = Node(node_name, dir_name)
         self.curNode = self.rootNode
         # print(f'Setting {node_name} as root node!')
 
@@ -60,7 +63,7 @@ class FileTree:
             current_node = nodes_to_visit.pop()
             nodes_to_visit += current_node.children
             if (current_node.size <= limit) & ~(len(current_node.children) == 0):
-                result_list[current_node.name] = current_node.size
+                result_list[current_node.dir + "/" + current_node.name] = current_node.size
                 logging.info(f'Node {current_node} with parent {current_node.parent}')
         return result_list
 
@@ -71,7 +74,7 @@ class FileTree:
         while len(nodes_to_visit) > 0:
             current_node = nodes_to_visit.pop()
             nodes_to_visit += current_node.children
-            result_list[current_node.name] = [c.name for c in current_node.children]
+            result_list[current_node.dir + "/" + current_node.name] = [c.dir + "/" + c.name for c in current_node.children]
         return result_list
 
     def recursivelySumUpDirSize(self):
@@ -146,20 +149,24 @@ class Parser:
         self.curToken = self.lexer.get_token()
 
     def program(self):
+        curFilePath = ""
         self.nextToken()
         while True:
             if self.curToken.tokenKind == TokenType.CHANGE_TO_ROOT:
                 self.curDirectory = self.curToken.tokenText
-                self.FileTree.add_root_node(self.curDirectory)
+                #curFilePath += self.curToken.tokenText
+                self.FileTree.add_root_node(self.curDirectory, curFilePath)
                 logging.info(f'changing to root {self.curDirectory}')
                 self.nextToken()
             elif self.curToken.tokenKind == TokenType.CHANGE_TO_DIRECTORY:
                 self.curDirectory = self.curToken.tokenText
+                curFilePath += ("/" + self.curToken.tokenText)
                 logging.info(f'changing to directory {self.curDirectory}')
                 self.FileTree.descend_to_child_node(self.curDirectory)
                 self.nextToken()
             elif self.curToken.tokenKind == TokenType.CHANGE_DIRECTORY_UP:
                 self.curDirectory = self.curToken.tokenText
+                curFilePath = "/".join(curFilePath.split("/")[:-1])
                 self.FileTree.go_one_node_up()
                 logging.info(f'changing to upper directory {self.FileTree.curNode}')
                 self.nextToken()
@@ -172,8 +179,8 @@ class Parser:
                     else:
                         size, name = ('0', self.curToken.tokenText)
                     size = int(size)
-                    self.FileTree.add_node(name, size)
-                    logging.info(f'appending {name} with size {size} to {self.curDirectory}')
+                    self.FileTree.add_node(name, curFilePath, size)
+                    logging.info(f'appending {name} with size {size} to {self.curDirectory} at path {curFilePath}')
                     self.nextToken()
             elif self.curToken.tokenKind == TokenType.EOF:
                 break
@@ -185,9 +192,9 @@ def solve_part_i(input):
     myParser = Parser(myLexer, myFileTree)
     myParser.program()
     myParser.FileTree.recursivelySumUpDirSize()
-    graph = Graph(myParser.FileTree.createTreeDict(), directed=True)
+    #graph = Graph(myParser.FileTree.createTreeDict(), directed=True)
     print(myParser.FileTree.createTreeDict())
-    graph.plot()
+    #graph.plot()
     result = sum(i for _, i in myParser.FileTree.traverseTree(100_000).items())
     return result
 
@@ -199,8 +206,8 @@ def solve_part_ii(input):
     myParser.program()
     myParser.FileTree.recursivelySumUpDirSize()
     print(f'Total file system size is {myParser.FileTree.rootNode.size}')
-    print(f'Missing file size is {70_000_000 - myParser.FileTree.rootNode.size}')
-    result = min([i for _, i in myParser.FileTree.traverseTree().items() if i > (70_000_000 - myParser.FileTree.rootNode.size)])
+    print(f'Missing file size is {myParser.FileTree.rootNode.size- 40_000_000}')
+    result = min([i for _, i in myParser.FileTree.traverseTree().items() if i > (myParser.FileTree.rootNode.size - 40_000_000)])
     return result
 
 
@@ -209,5 +216,5 @@ if __name__ == "__main__":
     print("--- Part One ---")
     print(solve_part_i(read_input(filename)))
     print("--- Part Two ---")
-#    print(solve_part_ii(read_input(filename)))
+    print(solve_part_ii(read_input(filename)))
     
