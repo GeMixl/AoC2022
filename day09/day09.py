@@ -72,16 +72,18 @@ def solve_part_i(input):
 
 def solve_part_ii(input):
     path_length = sum((l[1] for l in input))
-    head_positions = [(0, 0)]*(path_length+1)
-    tail_positions = [(0, 0)]*(path_length+1)
+    tail_length = 9
+    head_positions = [(0, 0) for _ in range(path_length+1)]
+    tail_positions = [[(0, 0) for _ in range(path_length+1)] for _ in range(tail_length)]
     idx = 0
     for m, d in input:
         for _ in range(d):
             head_positions[idx+1] = move_head(head_positions[idx], m)
-            tail_positions[idx+1] = move_tail(head_positions[idx], head_positions[idx+1], tail_positions[idx])
-            print(f'head {head_positions[idx]} --> {head_positions[idx+1]}, tail follows {tail_positions[idx]} --> {tail_positions[idx+1]}')
+            tail_positions[0][idx+1] = move_tail(head_positions[idx], head_positions[idx+1], tail_positions[0][idx])
+            for t in range(1, tail_length):
+                tail_positions[t][idx+1] = move_tail(tail_positions[t-1][idx], tail_positions[t-1][idx+1], tail_positions[t][idx])
             idx += 1
-    result_set = set(tail_positions)
+    result_set = set(tail_positions[8][:])
 
     return len(result_set)
 
