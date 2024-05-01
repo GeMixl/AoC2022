@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: "Regolith Reservoir"
+  description: "An API to receive regolith flow"
+  version: "1.0.0"
+
+servers:
+  - url: "/api"
+
+paths:
+  /regolithInitial:
+    get:
+      operationId: "regolith.get_initial_grid"
+      tags:
+        - "RegolithInitial"
+      summary: "Read the initial flow state"
+      responses:
+        "200":
+          description: "Successfully read flow state"
+  /regolithGetSize:
+    get:
+      operationId: "regolith.regolith_get_size"
+      tags:
+        - "RegolithGetSize"
+      summary: "Get the size of the initial grid"
+      responses:
+        "200":
+          description: "Successfully got size of Regolith Reservoir"

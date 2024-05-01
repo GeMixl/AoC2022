@@ -1,0 +1,51 @@
+.header {
+  display: inline-flex;
+  margin: 15px 5px 15px 5px;
+}
+
+.gridRow {
+  white-space: nowrap;
+}
+
+.emptyCell {
+  border: 1px solid gray;
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-block;
+  margin-right: 2px;
+}
+
+.rockCell {
+  border: 1px solid gray;
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-block;
+  margin-right: 2px;
+  background-color: gray;
+}
+
+.sourceCell {
+  border: 1px solid gray;
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-block;
+  margin-right: 2px;
+  background-color: coral;
+}
+
+.fullCell {
+  border: 1px solid gray;
+  min-width: 20px;
+  min-height: 20px;
+  display: inline-block;
+  margin-right: 2px;
+}
+
+.rowNumber {
+  width: 40px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 2px;
+  font-size: 12px;
+  text-align: right;
+}
